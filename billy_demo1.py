@@ -14,28 +14,18 @@ while wlan.isconnected() == False:
     print(".", end="")
 print(wlan.status())
 
-html = """
-<!DOCTYPE html>
-<html>
-    <head>
-    <title>Billy Bass</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
-    </head>
-        <body>
-        <div class="container mt-3">
-        <h1>Big Mouth Billy Bass</h1>
-        <img class="w-50 mt-3" src="http://www.kevsrobots.com/assets/img/bigmouthbillybass/fish01.jpg">
-    <p>%s</p>
-        </div>
-    </body>
-</html>
-"""
+
+f = open("index.html","r")
+html = f.read()
+f.close()
+
 onboard = Pin("LED", Pin.OUT, value=0)
 
 billy = Billy()
+stateis = ""
 
 async def serve_client(reader, writer):
-    global billy
+    global billy, stateis
     print("Client Connected")
     request_line = await reader.readline()
     print("Request:", request_line)
@@ -43,22 +33,38 @@ async def serve_client(reader, writer):
         pass
     
     request = str(request_line)
-    led_on = request.find('/head/out')
-    led_off = request.find('/head/in')
+    head_out = request.find('/head/out')
+    head_in = request.find('/head/in')
+    mouth_open = request.find('/mouth/open')
+    mouth_close = request.find('/mouth/close')
+    tail_out = request.find('/tail/out')
+    tail_in = request.find('/tail/in')
     
-    stateis = ""
-    if led_on ==6:
-        print("Billy Says Hello")
-#         led.va##lue(1)
+   
+    if head_out == 6:
         billy.head_out()
         stateis = "Billy's Head is OUT"
         
-    if led_off == 6:
-        print("Billy says Bye")
-#         led_value(0)
+    if head_in == 6:
         billy.head_in()
         stateis = "Billy's Head is IN"
         
+    if mouth_open == 6:
+        billy.mouth_open()
+        stateis = "Billy's Mouth is OPEN"
+    
+    if mouth_close == 6:
+        billy.mouth_close()
+        stateis = "Billy's Mouth is CLOSED"
+
+    if tail_out == 6:
+        billy.tail_out()
+        stateis = "Billy's Tail is OUT"
+    
+    if tail_in == 6:
+        billy.tail_in()
+        stateis = "Billy's Tail is IN"
+
     response = html % stateis
     writer.write('HTTP/1.0 200 OK\r\nContent-type: text/html\r\n\r\n')
     writer.write(response)
@@ -77,9 +83,6 @@ async def main():
         onboard.off()
         await asyncio.sleep(5)
            
-
-
-
 billy.reset()
 sleep(1)
 
