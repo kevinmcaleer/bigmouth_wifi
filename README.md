@@ -3,7 +3,7 @@ Control a Billy Bass wifi using a Raspberry Pi Pico W hosting a webpage!
 
 ## Website
 Visit: 
-http://big.mouthpi.co to send commands to Big Mouth Billy Bass.
+<https://mouthpi.co> to send commands to Big Mouth Billy Bass.
 
 ## Video
 The YouTube video that goes along with this build can be accessed here:
