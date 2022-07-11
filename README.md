@@ -9,3 +9,5 @@ Visit:
 The YouTube video that goes along with this build can be accessed here:
 
 <https://youtu.be/dOEjfBplueM>
+
+![Big Mouth Billy Bass](http://www.kevsrobots.com/assets/img/bigmouthbillybass/fish01.jpg)
