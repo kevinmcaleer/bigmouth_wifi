@@ -2,9 +2,10 @@ from billy import Billy
 from time import sleep
 import network
 from secret import ssid, password
-from machine import Pin
+from machine import Pin, WDT
 import uasyncio as asyncio
 import socket
+from time import gmtime
 
 wlan = network.WLAN(network.STA_IF)
 wlan.active(True)
@@ -12,7 +13,8 @@ wlan.connect(ssid, password)
 
 while wlan.isconnected() == False:
     print(".", end="")
-print(wlan.status())
+    sleep(0.5)
+print(wlan.ifconfig())
 
 
 f = open("index.html","r")
@@ -23,9 +25,23 @@ onboard = Pin("LED", Pin.OUT, value=0)
 
 billy = Billy()
 stateis = ""
+page_views = 0
+
+
+def what_time_is_it_mr_wolf()->list:
+    time_list = gmtime()
+    current_time = {'year': str(time_list[0]),
+                    'month': str(time_list[1]),
+                    'day': str(time_list[2]),
+                    'hour': str(time_list[3]),
+                    'minute': str(time_list[4]),
+                    'second': str(time_list[5])}
+    return str(current_time['hour'] + ":" + current_time['minute'] + ":" +  current_time['second'] + " " + current_time['day'] + "/" + current_time['month'] + "/" + current_time['year'] )
 
 async def serve_client(reader, writer):
-    global billy, stateis
+    global billy, stateis, page_views, boot_time
+
+    page_views += 1
     print("Client Connected")
     request_line = await reader.readline()
     print("Request:", request_line)
@@ -41,66 +57,37 @@ async def serve_client(reader, writer):
     tail_in = request.find('/tail/in')
     
    
-    if head_out == 6:
-        billy.head_out()
-        stateis = "Billy's Head is OUT"
+    if head_out == 6: billy.head_out()
+    if head_in == 6: billy.head_in()
+    if mouth_open == 6: billy.mouth_open()
+    if mouth_close == 6: billy.mouth_close()
+    if tail_out == 6: billy.tail_out()
+    if tail_in == 6: billy.tail_in()
         
-    if head_in == 6:
-        billy.head_in()
-        stateis = "Billy's Head is IN"
-        
-    if mouth_open == 6:
-        billy.mouth_open()
-        stateis = "Billy's Mouth is OPEN"
-    
-    if mouth_close == 6:
-        billy.mouth_close()
-        stateis = "Billy's Mouth is CLOSED"
-
-    if tail_out == 6:
-        billy.tail_out()
-        stateis = "Billy's Tail is OUT"
-    
-    if tail_in == 6:
-        billy.tail_in()
-        stateis = "Billy's Tail is IN"
-
-    response = html % stateis
+    print(f'billy: "{billy}"')
+    response = html % (billy, billy.status, str(page_views), boot_time)
     writer.write('HTTP/1.0 200 OK\r\nContent-type: text/html\r\n\r\n')
     writer.write(response)
     
     await writer.drain()
     await writer.wait_closed()
     print('Client Disconnected')
-    
+
 async def main():
     print ("setting up webserver")
     asyncio.create_task(asyncio.start_server(serve_client, "0.0.0.0", 80))
+    wdt = WDT(timeout=8000)
     while True:
         onboard.on()
         print("heartbeat")
+        wdt.feed()
         await asyncio.sleep(0.25)
         onboard.off()
         await asyncio.sleep(5)
-           
+          
+boot_time = what_time_is_it_mr_wolf()
 billy.reset()
-sleep(1)
-
-billy.head_out()
-billy.tail_out()
-sleep(0.5)
-for _ in range(1, 1):
-    billy.mouth_open()
-    sleep(0.0001)
-    billy.mouth_close()
-    sleep(0.0001)
-billy.tail_in()
-billy.head_in()
-
-billy.flap_tail(2)
-# billy.head_out()
-# sleep(2)
-# billy.head_in()
+sleep(0.1)
 
 try:
     asyncio.run(main())
