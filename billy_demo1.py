@@ -2,7 +2,7 @@ from billy import Billy
 from time import sleep
 import network
 from secret import ssid, password
-from machine import Pin, WDT
+from machine import Pin, WDT, reset
 import uasyncio as asyncio
 import socket
 from time import gmtime
@@ -15,7 +15,6 @@ while wlan.isconnected() == False:
     print(".", end="")
     sleep(0.5)
 print(wlan.ifconfig())
-
 
 f = open("index.html","r")
 html = f.read()
@@ -78,6 +77,10 @@ async def main():
     asyncio.create_task(asyncio.start_server(serve_client, "0.0.0.0", 80))
     wdt = WDT(timeout=8000)
     while True:
+        # check wifi is connected:
+        if wlan.isconnected() == False:
+            print("wifi disconnected")
+            reset()
         onboard.on()
         print("heartbeat")
         wdt.feed()
