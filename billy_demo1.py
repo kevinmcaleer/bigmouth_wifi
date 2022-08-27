@@ -6,15 +6,9 @@ from machine import Pin, WDT, reset
 import uasyncio as asyncio
 import socket
 from time import gmtime
+from phew import server, connect_to_wifi
 
-wlan = network.WLAN(network.STA_IF)
-wlan.active(True)
-wlan.connect(ssid, password)
-
-while wlan.isconnected() == False:
-    print(".", end="")
-    sleep(0.5)
-print(wlan.ifconfig())
+connect_to_wifi(ssid, password)
 
 f = open("index.html","r")
 html = f.read()

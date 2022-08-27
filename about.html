@@ -1,0 +1,26 @@
+{{render_template("header.html")}}
+
+<div class="container mt-3">
+    <div class="h-100 p-5 bg-light border rounded-3">
+    <h1>About this Project</h1>
+    <p>This website is hosted on a <b>Raspberry Pi Pico W</b>, in the Robotlab, hotglued inside a Big Mouth Billy Bass. You can remotely control Big Mouth Billy by clicking the buttons on the <a href="/">main page.</a></p>
+    <p>The Pico W runs MicroPython code to control the Fish motors, and to receive requests for web pages and to render out the webpages based on templates.</p>
+    </ br>
+    </ br>
+    <hr>
+    <h2>Phew! Phew!</h2>
+    <p><a href="https://www.github.com/pimoroni/phew">Phew!</a> is the web server, logging system, and page templating system use a new MicroPython library from <a href="https://www.pimoroni.com" class="nav-link">Pimoroni</a></p>
+    <h3>Logging</h3>
+    <p>The logging system enables you to log important information to the Pico W's local file system, noting the date and time, type of message and the message itself.
+        The types of messages are: <b>debug</b>, <b>info</b>, <b>warn</b>, <b>error</b>.</p>
+    <p>The logging system has a function called <code>Truncate</code> which can be used to trim the log file down to a certain number of lines.</p>
+    </ br>
+    </ br>
+    <h3>NTP-time</h3>
+    <p>NTP is used to Synchronise the Pico W's realtime clock with a network type protocol server, which it does right after connecting to the local wifi network.</p>
+    <p>This ensures the log files record the correct time, and uptime is correctly displayed on the main website.</p>
+
+</div>
+</div>
+
+{{render_template("footer.html")}}
