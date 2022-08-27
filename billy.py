@@ -61,7 +61,7 @@ class Billy():
 
     @staticmethod
     def clock_set():
-      return RTC().datetime()[0] > 2020 # year greater than 2020? we're golden!
+      return RTC().datetime()[0] > 2022 # year greater than 2020? we're golden!
 
     @staticmethod
     def update_rtc_from_ntp(max_attempts = 5):
@@ -91,9 +91,9 @@ class Billy():
 
     # connect to wifi and then attempt to fetch the current time from an ntp server
     # once fetch set the onboard rtc and the pico's own rtc
-    @staticmethod
+    
     def sync_clock_from_ntp(self):
-      t = update_rtc_from_ntp()
+      t = self.update_rtc_from_ntp()
       if not t:
         logging.error("  - failed to fetch time from ntp server")
         return False

@@ -101,7 +101,7 @@ def mouth_open(request):
     billy.mouth_open()
     return redirect_and_respond(request)
 
-@server.route("/mouth/close", methods=["GET"])
+@server.route("/mouth/closed", methods=["GET"])
 def mouth_close(request):
     billy.mouth_close()
     return redirect_and_respond(request)
@@ -113,6 +113,11 @@ def catchall(request):
 server.run(host="0.0.0.0", port=80)
 wdt = WDT(timeout=8000)
 while True:
+    if billy.low_disk_space():
+      # there is less than 10% of the filesystem available, time to truncate the log file
+      logging.error("! low disk space")
+      logging.truncate(8192)
+    
     # check wifi is connected:
     if wlan.isconnected() == False:
         print("wifi disconnected")
